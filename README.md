@@ -4,8 +4,8 @@
 
 1. Clone the repository:
 ```bash
-git clone 
-cd 
+git clone https://github.com/ViniciusSonntagDorow/Sheet2DB.git
+cd Sheet2DB
 ```
 
 2. Configure the correct Python version with `Pyenv`:
