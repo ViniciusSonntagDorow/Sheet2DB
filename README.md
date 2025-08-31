@@ -4,7 +4,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ViniciusSonntagDorow/Sheet2DB.git
+git clone git@github.com:ViniciusSonntagDorow/Sheet2DB.git
 cd Sheet2DB
 ```
 
