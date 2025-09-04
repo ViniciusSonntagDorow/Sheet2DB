@@ -1,7 +1,8 @@
 import pandera.pandas as pa
-import pandas as pd
+
+# import pandas as pd
 from pandera.typing import Series
-from typing import Optional
+# from typing import Optional
 
 
 class BaseSchema(pa.DataFrameModel):
