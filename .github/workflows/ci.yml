@@ -1,0 +1,25 @@
+name: ci
+
+on: pull_request
+jobs: 
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        python-version: ['3.11', '3.12']
+      
+    steps:
+
+      - name: Download Repository
+        uses: actions/checkout@v4
+
+      - name: Download Python Versions
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt 
+      
+      - name: Test Schema
+        run: pytest tests/test_schema.py -v 
