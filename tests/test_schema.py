@@ -14,7 +14,7 @@ from src.schema import BaseSchema
 def test_validated_schema():
     df_test = pd.DataFrame(
         {
-            "date": ["2023-01-01", "2023-01-01", "2023-01-01"],
+            "date": ["wrong", "2023-01-01", "2023-01-01"],
             "description": ["lidl", "pizza", "uber"],
             "category": ["Food", "Other", "Transport"],
             "amount": [10.0, 20.0, 5.0],
