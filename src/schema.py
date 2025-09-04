@@ -1,11 +1,13 @@
 import pandera.pandas as pa
 import pandas as pd
 from pandera.typing import Series
+from typing import Optional
 
 
 class BaseSchema(pa.DataFrameModel):
     date: Series[pa.DateTime]
     description: Series[str]
+    # description: Series[Optional[str]] = pa.Field(nullable=True) # If needed, we can specify a nullable collumn
     category: Series[str] = pa.Field(
         isin=[
             "Food",
