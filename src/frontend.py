@@ -7,7 +7,7 @@ class ExcelValidadorUI:
 
     def set_page_config(self):
         st.set_page_config(
-            page_title="Excel schema validator",
+            page_title="Sheet2DB",
             page_icon=":floppy_disk:",
             layout="centered",
             initial_sidebar_state="collapsed",
@@ -17,7 +17,7 @@ class ExcelValidadorUI:
         )
 
     def display_header(self):
-        st.title("Insert your excel for validation")
+        st.title("Sheet2DB - Excel Schema Validator")
 
     def upload_file(self):
         return st.file_uploader("Load your excel file here", type=["xlsx"])
