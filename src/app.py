@@ -1,6 +1,6 @@
 from frontend import ExcelValidadorUI
 from backend import process_excel, excel_to_sql
-import logging
+# import logging
 # import sentry_sdk
 
 # sentry_sdk.init(
