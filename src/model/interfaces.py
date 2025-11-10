@@ -3,9 +3,6 @@ import pandas as pd
 
 
 class IRead(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
     def read_data(self, file: str) -> pd.DataFrame:
         """Extract the input file into a DataFrame.
@@ -20,26 +17,20 @@ class IRead(ABC):
 
 
 class IValidate(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
-    def validate_data(self, df: pd.DataFrame) -> bool:
+    def validate_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Validate the DataFrame against a schema.
 
         Args:
             df (pd.DataFrame): The DataFrame to validate.
 
         Returns:
-            bool: True if validation passes, False otherwise.
+            pd.DataFrame: Validated DataFrame.
         """
         pass
 
 
 class ITransform(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
     def transform_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Apply transformations to the DataFrame.
@@ -54,9 +45,6 @@ class ITransform(ABC):
 
 
 class ILoad(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
     def load_data(self, df: pd.DataFrame, destination: str) -> None:
         """Load the DataFrame to the specified destination.
