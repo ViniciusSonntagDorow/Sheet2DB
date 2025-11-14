@@ -11,7 +11,7 @@ class BaseSchema(pa.DataFrameModel):
     # description: Series[Optional[str]] = pa.Field(nullable=True) # If needed, we can specify a nullable collumn
     category: Series[str] = pa.Field(
         isin=[
-            "Food",
+            "Supermarket",
             "Transport",
             "Entertainment",
             "Shopping",
