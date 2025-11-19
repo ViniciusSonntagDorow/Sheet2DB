@@ -1,9 +1,9 @@
 import pandas as pd
 
-from .base_classes import BaseReader
+from model.interfaces import IRead
 
 
-class CSVReader(BaseReader):
+class CSVReader(IRead):
     def __init__(
         self,
         sep: str = ",",
@@ -11,8 +11,8 @@ class CSVReader(BaseReader):
         engine: str = "pyarrow",
         dtype_backend: str = "pyarrow",
     ):
-        super().__init__(engine=engine, dtype_backend=dtype_backend)
-
+        self.engine = engine
+        self.dtype_backend = dtype_backend
         self.sep = sep
         self.encoding = encoding
 
@@ -26,9 +26,10 @@ class CSVReader(BaseReader):
         )
 
 
-class ExcelReader(BaseReader):
+class ExcelReader(IRead):
     def __init__(self, engine: str = "calamine", dtype_backend: str = "pyarrow"):
-        super().__init__(engine=engine, dtype_backend=dtype_backend)
+        self.engine = engine
+        self.dtype_backend = dtype_backend
 
     def read_data(self, file: str) -> pd.DataFrame:
         xls = pd.ExcelFile(file, engine=self.engine)
