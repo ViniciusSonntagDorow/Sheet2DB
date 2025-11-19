@@ -22,5 +22,5 @@ class ITransform(ABC):
 
 class ILoad(ABC):
     @abstractmethod
-    def load_data(self, df: pd.DataFrame, destination: str) -> None:
+    def load_data(self, df: pd.DataFrame) -> None:
         pass

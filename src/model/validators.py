@@ -1,8 +1,9 @@
 import pandas as pd
 import pandera.pandas as pa
 
-from .interfaces import IValidate
-from .schema import BaseSchema
+from exceptions.validation import ValidationError
+from model.interfaces import IValidate
+from model.schema import BaseSchema
 
 
 class PanderaValidator(IValidate):
@@ -11,7 +12,9 @@ class PanderaValidator(IValidate):
 
     def validate_data(self, df: pd.DataFrame) -> pd.DataFrame:
         try:
-            validated_df = self.schema.validate(df, lazy=True)
-            return validated_df
+            return self.schema.validate(df, lazy=True)
         except pa.errors.SchemaErrors as e:
-            return pd.DataFrame()
+            raise ValidationError(f"Data validation failed: {e}")
+
+        except Exception as e:
+            raise ValidationError(f"Unexpected error during validation: {e}")
