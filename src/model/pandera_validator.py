@@ -1,18 +1,18 @@
 import pandas as pd
 import pandera.pandas as pa
 
-from exceptions.validation import ValidationError
-from model.interfaces import IValidate
-from model.schema import BaseSchema
+from utils.validation_error import ValidationError
+from utils.schema import BaseSchema
+from model.validator import Validator
 
 
-class PanderaValidator(IValidate):
+class PanderaValidator(Validator):
     def __init__(self, schema: pa.DataFrameSchema = BaseSchema):
-        self.schema = schema
+        self.__schema = schema
 
     def validate_data(self, df: pd.DataFrame) -> pd.DataFrame:
         try:
-            return self.schema.validate(df, lazy=True)
+            return self.__schema.validate(df, lazy=True)
         except pa.errors.SchemaErrors as e:
             raise ValidationError(f"Data validation failed: {e}")
 
