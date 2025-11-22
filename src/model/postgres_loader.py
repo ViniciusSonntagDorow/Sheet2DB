@@ -27,7 +27,7 @@ class PostgresLoader(Loader):
     def __str__(self):
         return f"PostgresLoader({self.__user}@{self.__host}:{self.__port}/{self.__database})"
 
-    def load_data(self, df: pd.DataFrame) -> None:
+    def load_data(self, df: pd.DataFrame, destination: str) -> None:
         df.to_sql(
-            "statements", con=self.__connection_string, if_exists="append", index=False
+            destination, con=self.__connection_string, if_exists="append", index=False
         )
