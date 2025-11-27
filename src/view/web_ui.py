@@ -1,16 +1,18 @@
 import streamlit as st
 
-from components.header import HeaderComponent
-from components.uploader import UploaderComponent
+from view.components.header import HeaderComponent
+from view.components.uploader import UploaderComponent
+from view.components.navigator import NavigatorComponent
 
 
 class WebUI:
     def __init__(self):
-        self.set_page_config()
-        HeaderComponent()
-        UploaderComponent()
+        self._set_page_config()
+        self.header = HeaderComponent()
+        self.uploader = UploaderComponent()
+        self.navigator = NavigatorComponent()
 
-    def set_page_config(self):
+    def _set_page_config(self):
         st.set_page_config(
             page_title="Sheet2DB",
             page_icon=":floppy_disk:",
@@ -21,5 +23,11 @@ class WebUI:
             },
         )
 
+    def show_header(self):
+        self.header.render()
 
-WebUI()
+    def show_navigation(self):
+        return self.navigator.render()
+
+    def get_uploaded_file(self):
+        return self.uploader.render()
