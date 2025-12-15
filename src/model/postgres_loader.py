@@ -1,33 +1,19 @@
 import pandas as pd
-from dotenv import load_dotenv, find_dotenv
-import os
 
 from model.loader import Loader
-
-
-load_dotenv(find_dotenv())
+from utils.config import config
 
 
 class PostgresLoader(Loader):
-    def __init__(
-        self,
-        user: str = os.getenv("POSTGRES_USER"),
-        password: str = os.getenv("POSTGRES_PASSWORD"),
-        host: str = os.getenv("POSTGRES_HOST"),
-        port: str = os.getenv("POSTGRES_PORT"),
-        database: str = os.getenv("POSTGRES_DB"),
-    ):
-        self.__user = user
-        self.__password = password
-        self.__host = host
-        self.__port = port
-        self.__database = database
-        self.__connection_string = f"postgresql://{self.__user}:{self.__password}@{self.__host}:{self.__port}/{self.__database}"
+    def __init__(self, connection_string: str = config.get_connection_string()):
+        self.__connection_string = connection_string
 
     def __str__(self):
-        return f"PostgresLoader({self.__user}@{self.__host}:{self.__port}/{self.__database})"
+        return f"PostgresLoader(connected to {config.POSTGRES_HOST}:{config.POSTGRES_PORT}/{config.POSTGRES_DB})"
 
-    def load_data(self, df: pd.DataFrame, destination: str) -> None:
+    def load_data(
+        self, df: pd.DataFrame, table_name: str = config.POSTGRES_TABLE
+    ) -> None:
         df.to_sql(
-            destination, con=self.__connection_string, if_exists="append", index=False
+            table_name, con=self.__connection_string, if_exists="append", index=False
         )

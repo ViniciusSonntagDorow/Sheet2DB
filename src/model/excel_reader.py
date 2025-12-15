@@ -1,10 +1,15 @@
 import pandas as pd
 
 from model.reader import Reader
+from utils.config import config
 
 
 class ExcelReader(Reader):
-    def __init__(self, engine: str = "calamine", dtype_backend: str = "pyarrow"):
+    def __init__(
+        self,
+        engine: str = config.EXCEL_ENGINE,
+        dtype_backend: str = config.DTYPE_BACKEND,
+    ):
         self.__engine = engine
         self.__dtype_backend = dtype_backend
 

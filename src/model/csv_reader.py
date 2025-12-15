@@ -1,15 +1,16 @@
 import pandas as pd
 
 from model.reader import Reader
+from utils.config import config
 
 
 class CSVReader(Reader):
     def __init__(
         self,
-        sep: str = ",",
-        encoding: str = "utf-8",
-        engine: str = "pyarrow",
-        dtype_backend: str = "pyarrow",
+        sep: str = config.CSV_SEPARATOR,
+        encoding: str = config.CSV_ENCODING,
+        engine: str = config.CSV_ENGINE,
+        dtype_backend: str = config.DTYPE_BACKEND,
     ):
         self.__engine = engine
         self.__dtype_backend = dtype_backend
