@@ -1,5 +1,6 @@
 import pandas as pd
-from typing import Optional
+import pandera as pa
+from enum import Enum
 
 from model.csv_reader import CSVReader
 from model.excel_reader import ExcelReader
@@ -9,55 +10,51 @@ from model.postgres_loader import PostgresLoader
 from view.web_ui import WebUI
 
 
-class PipelineController:
-    """
-    Controller responsible for orchestrating the data pipeline.
-    Handles user interactions, validates data, and coordinates between View and Model.
-    """
+class FileType(Enum):
+    """Supported file types"""
 
+    CSV = "csv"
+    EXCEL = "excel"
+    XLSX = "xlsx"
+
+
+class PipelineController:
     def __init__(self, view: WebUI):
         self.view = view
 
-        # Model components
         self.csv_reader = CSVReader()
         self.excel_reader = ExcelReader()
         self.validator = PanderaValidator()
         self.loader = PostgresLoader()
 
     def run(self):
-        """Main application loop"""
         self.view.show_header()
 
-        home, insert, upload, view, manage = self.view.show_navigation()
+        tabs = self.view.show_navigation()
 
-        with home:
+        with tabs.home:
             self._home_flow()
 
-        with insert:
+        with tabs.insert:
             self._insert_flow()
 
-        with upload:
+        with tabs.upload:
             self._upload_flow()
 
-        with view:
+        with tabs.view:
             self._view_flow()
 
-        with manage:
+        with tabs.manage:
             self._manage_flow()
 
     def _home_flow(self):
-        """Display home page"""
         self.view.show_home()
 
     def _insert_flow(self):
-        """Handle manual data insertion"""
-        # Get data from view
-        expense_data = self.view.get_insert_form_data()
+        expense_data = self.view.get_insert_form()
 
         if expense_data and expense_data.get("submitted"):
-            # Process the data (controller's job)
             try:
-                # Create DataFrame from form data
                 df = pd.DataFrame(
                     [
                         {
@@ -69,67 +66,71 @@ class PipelineController:
                     ]
                 )
 
-                # Validate data
                 validated_df = self.validator.validate_data(df)
 
-                # Load to database
-                self.loader.load_data(validated_df)
+                # self.loader.load_data(validated_df)
 
-                # Show success message
                 self.view.show_success("Expense inserted successfully! 💾")
 
+                self.view.show_dataframe_preview(validated_df)
+
+            except pa.errors.SchemaErrors as schema_error:
+                self.view.show_error(
+                    f"❌ Data validation failed: Found {len(schema_error.failure_cases)} validation errors"
+                )
+                self.view.show_dataframe_preview(schema_error.failure_cases)
+
             except Exception as e:
-                # Show error message
                 self.view.show_error(f"Error inserting expense: {str(e)}")
 
     def _upload_flow(self):
-        """Handle file upload and batch processing"""
-        # Get file type selection
         file_type = self.view.get_upload_option()
 
         if file_type:
-            # Get uploaded file
             uploaded_file = self.view.get_uploaded_file(file_type)
 
             if uploaded_file:
                 try:
-                    # Read data based on file type (Model's job)
                     df = self._read_file(uploaded_file, file_type)
 
-                    # Show preview to user
-                    self.view.show_dataframe_preview(df)
+                    validated_df = self.validator.validate_data(df)
 
-                    # Validate data
-                    if self.view.ask_confirmation("Validate and load data?"):
-                        validated_df = self.validator.validate(df)
+                    self.view.show_dataframe_preview(validated_df)
 
-                        # Load to database
-                        self.loader.load_data(validated_df)
+                    if self.view.ask_confirmation(
+                        "Do you want to load this data into the database?"
+                    ):
+                        # self.loader.load_data(validated_df)
 
                         self.view.show_success(
                             f"Successfully loaded {len(validated_df)} records! 💾"
                         )
 
+                except pa.errors.SchemaErrors as schema_error:
+                    self.view.show_error(
+                        f"❌ Data validation failed: Found {len(schema_error.failure_cases)} validation errors"
+                    )
+                    self.view.show_dataframe_preview(schema_error.failure_cases)
+
                 except Exception as e:
-                    self.view.show_error(f"Error processing file: {str(e)}")
+                    self.view.show_error(f"Error inserting expense: {str(e)}")
 
     def _read_file(self, file, file_type: str) -> pd.DataFrame:
-        """Read file based on type (Model interaction)"""
-        if file_type.lower() == "csv":
+        """Read file based on type"""
+        file_type_lower = file_type.lower()
+
+        if file_type_lower == FileType.CSV.value:
             return self.csv_reader.read_data(file)
-        elif file_type.lower() in ["excel", "xlsx"]:
+        elif file_type_lower in [FileType.EXCEL.value, FileType.XLSX.value]:
             return self.excel_reader.read_data(file)
         else:
             raise ValueError(f"Unsupported file type: {file_type}")
 
     def _view_flow(self):
-        """Display data visualization"""
         try:
-            # Fetch data from database (Model's job)
-            df = self._fetch_data_from_db()
+            df = self._fetch_data_from_db()  # Criar um modulo pra isso
 
             if df is not None and not df.empty:
-                # Pass data to view for display
                 self.view.show_data_view(df)
             else:
                 self.view.show_info("No data available to display.")
@@ -137,12 +138,5 @@ class PipelineController:
         except Exception as e:
             self.view.show_error(f"Error loading data: {str(e)}")
 
-    def _fetch_data_from_db(self) -> Optional[pd.DataFrame]:
-        """Fetch data from database (placeholder - implement based on your needs)"""
-        # TODO: Implement data fetching from PostgreSQL
-        # For now, return None to indicate under development
-        return None
-
     def _manage_flow(self):
-        """Handle data management operations"""
         self.view.show_manage()

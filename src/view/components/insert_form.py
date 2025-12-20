@@ -1,18 +1,12 @@
 import streamlit as st
 import datetime
-from typing import Dict, Any
+from typing import Optional, Dict, Any
 
 from utils.config import config
 
 
-class InsertComponent:
-    """Component for manual expense insertion form"""
-
-    def render(self) -> Dict[str, Any]:
-        """
-        Render insert form and return data as dictionary.
-        View's job: Display form and capture input.
-        """
+class InsertFormComponent:
+    def render(self) -> Optional[Dict[str, Any]]:
         st.subheader("Insert New Expense")
 
         with st.form("insert_expense_form"):
@@ -38,7 +32,6 @@ class InsertComponent:
             )
             submit_button = st.form_submit_button("💾 Save Expense")
 
-        # Return data as structured dictionary
         return {
             "date": date_input,
             "description": description_input,
