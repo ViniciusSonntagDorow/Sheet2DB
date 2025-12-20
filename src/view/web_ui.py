@@ -5,31 +5,26 @@ from typing import Optional, Dict, Any
 from view.components.header import HeaderComponent
 from view.components.upload_file import UploadFileComponent
 from view.components.upload_options import UploadOptionsComponent
-from view.components.navigate import NavigateComponent
-from view.components.view import ViewComponent
+from view.components.navigation import NavigationComponent
+from view.components.data_view import DataViewComponent
 from view.components.home import HomeComponent
-from view.components.insert import InsertComponent
+from view.components.insert_form import InsertFormComponent
 from view.components.manage import ManageComponent
 
 
 class WebUI:
-    """
-    View layer - responsible ONLY for displaying data and capturing user input.
-    No business logic should be here.
-    """
-
     def __init__(self):
         self._set_page_config()
         self.header = HeaderComponent()
         self.upload = UploadFileComponent()
         self.upload_options = UploadOptionsComponent()
-        self.navigator = NavigateComponent()
-        self.view = ViewComponent()
+        self.navigation = NavigationComponent()
+        self.data_view = DataViewComponent()
         self.home = HomeComponent()
-        self.insert = InsertComponent()
+        self.insert_form = InsertFormComponent()
         self.manage = ManageComponent()
 
-    def _set_page_config(self):
+    def _set_page_config(self) -> None:
         st.set_page_config(
             page_title="Spendly",
             page_icon="💵",
@@ -40,73 +35,46 @@ class WebUI:
             },
         )
 
-    # ===== Display Methods =====
-
-    def show_header(self):
-        """Display application header"""
+    def show_header(self) -> None:
         self.header.render()
 
-    def show_navigation(self):
-        """Display navigation tabs"""
-        return self.navigator.render()
+    def show_navigation(self) -> Any:
+        return self.navigation.render()
 
-    def show_home(self):
-        """Display home page"""
+    def show_home(self) -> Any:
         return self.home.render()
 
-    def show_manage(self):
-        """Display manage page"""
-        return self.manage.render()
-
-    # ===== User Input Methods =====
-
-    def get_insert_form_data(self) -> Optional[Dict[str, Any]]:
-        """
-        Get form data from insert component.
-        Returns dict with form fields and submitted status.
-        """
-        return self.insert.render()
+    def get_insert_form(self) -> Optional[Dict[str, Any]]:
+        return self.insert_form.render()
 
     def get_upload_option(self) -> Optional[str]:
-        """Get selected file upload type (CSV/Excel)"""
         return self.upload_options.render()
 
-    def get_uploaded_file(self, file_type: str):
-        """Get uploaded file from user"""
+    def get_uploaded_file(self, file_type: str) -> Any:
         return self.upload.render(file_type)
 
-    # ===== Data Display Methods =====
+    def show_data_view(self, df: pd.DataFrame) -> None:
+        self.data_view.render(df)
 
-    def show_data_view(self, df: pd.DataFrame):
-        """Display data visualization with dataframe"""
-        self.view.render(df)
+    def show_manage(self) -> Any:
+        return self.manage.render()
 
-    def show_dataframe_preview(self, df: pd.DataFrame):
-        """Show preview of dataframe before processing"""
+    def show_dataframe_preview(self, df: pd.DataFrame) -> None:
         st.subheader("Data Preview")
-        st.dataframe(df.head(10))
-        st.info(f"Total records: {len(df)}")
+        st.dataframe(df.head(5))
 
-    # ===== Feedback Methods =====
-
-    def show_success(self, message: str):
-        """Display success message"""
+    def show_success(self, message: str) -> None:
+        st.balloons()
         st.success(message, icon="✅")
 
-    def show_error(self, message: str):
-        """Display error message"""
+    def show_error(self, message: str) -> None:
         st.error(message, icon="🚨")
 
-    def show_warning(self, message: str):
-        """Display warning message"""
+    def show_warning(self, message: str) -> None:
         st.warning(message, icon="⚠️")
 
-    def show_info(self, message: str):
-        """Display info message"""
+    def show_info(self, message: str) -> None:
         st.info(message, icon="ℹ️")
 
-    # ===== Interaction Methods =====
-
     def ask_confirmation(self, question: str) -> bool:
-        """Ask user for confirmation"""
-        return st.button(question)
+        return st.button(question, width="stretch")

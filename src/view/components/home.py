@@ -2,9 +2,8 @@ import streamlit as st
 
 
 class HomeComponent:
-    def render(self):
-        # info = st.error("Under Development...", icon="🚨")
-        text = st.markdown(
+    def render(self) -> None:
+        st.markdown(
             """
             ### Welcome to Expense Tracker App!
             This application helps you track your expenses efficiently.
@@ -19,4 +18,3 @@ class HomeComponent:
             - Vinicius Sonntag Dorow | [GitHub](https://github.com/ViniciusSonntagDorow) | [LinkedIn](https://www.linkedin.com/in/viniciussonntagdorow/)
             """
         )
-        return text
