@@ -1,4 +1,4 @@
-date,description,category,amount
+expense_date,description,category,amount
 01/10/2025,lidl,,150
 02/10/2025,restaurant,Other,50
 03/10/2025,bus,Transport,1

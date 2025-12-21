@@ -7,7 +7,7 @@ from utils.config import config
 
 
 class BaseSchema(pa.DataFrameModel):
-    date: Series[pa.DateTime]
+    expense_date: Series[pa.DateTime]
     description: Series[str]
     # description: Series[Optional[str]] = pa.Field(nullable=True) # If needed, we can specify a nullable collumn
     category: Series[str] = pa.Field(isin=config.VALID_CATEGORIES)

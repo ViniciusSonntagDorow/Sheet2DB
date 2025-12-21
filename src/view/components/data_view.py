@@ -5,12 +5,6 @@ from typing import Optional
 
 class DataViewComponent:
     def render(self, df: Optional[pd.DataFrame] = None) -> None:
-        st.subheader("📊 Expense Analytics")
-
-        if df is None or df.empty:
-            st.info("No data available yet. Upload or insert expenses first.", icon="ℹ️")
-            return
-
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total Expenses", f"${df['amount'].sum():,.2f}")
@@ -19,13 +13,14 @@ class DataViewComponent:
         with col3:
             st.metric("Avg Amount", f"${df['amount'].mean():,.2f}")
 
-        st.subheader("Expenses by Category")
+        st.subheader("Expenses by Category", anchor=False)
         category_data = (
             df.groupby("category")["amount"].sum().sort_values(ascending=False)
         )
         st.bar_chart(category_data)
 
-        st.subheader("Recent Expenses")
+        st.subheader("Recent Expenses", anchor=False)
         st.dataframe(
-            df.sort_values("date", ascending=False).head(20), use_container_width=True
+            df.sort_values("expense_date", ascending=False).head(20),
+            use_container_width=True,
         )
