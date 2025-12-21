@@ -6,6 +6,7 @@ from model.csv_reader import CSVReader
 from model.excel_reader import ExcelReader
 from model.pandera_validator import PanderaValidator
 from model.postgres_loader import PostgresLoader
+from model.postgres_reader import PostgresReader
 
 from view.web_ui import WebUI
 
@@ -22,6 +23,7 @@ class PipelineController:
     def __init__(self, view: WebUI):
         self.view = view
 
+        self.postgres_reader = PostgresReader()
         self.csv_reader = CSVReader()
         self.excel_reader = ExcelReader()
         self.validator = PanderaValidator()
@@ -58,7 +60,7 @@ class PipelineController:
                 df = pd.DataFrame(
                     [
                         {
-                            "date": expense_data["date"],
+                            "expense_date": expense_data["date"],
                             "description": expense_data["description"],
                             "category": expense_data["category"],
                             "amount": expense_data["amount"],
@@ -68,11 +70,12 @@ class PipelineController:
 
                 validated_df = self.validator.validate_data(df)
 
-                # self.loader.load_data(validated_df)
+                validated_df["user"] = "user"
+                validated_df["created_at"] = pd.Timestamp.now()
 
-                self.view.show_success("Expense inserted successfully! 💾")
+                self.loader.load_data(validated_df)
 
-                self.view.show_dataframe_preview(validated_df)
+                self.view.show_success("Expense inserted successfully!")
 
             except pa.errors.SchemaErrors as schema_error:
                 self.view.show_error(
@@ -95,15 +98,16 @@ class PipelineController:
 
                     validated_df = self.validator.validate_data(df)
 
-                    self.view.show_dataframe_preview(validated_df)
+                    validated_df["user"] = "user"
+                    validated_df["created_at"] = pd.Timestamp.now()
 
                     if self.view.ask_confirmation(
                         "Do you want to load this data into the database?"
                     ):
-                        # self.loader.load_data(validated_df)
+                        self.loader.load_data(validated_df)
 
                         self.view.show_success(
-                            f"Successfully loaded {len(validated_df)} records! 💾"
+                            f"Successfully loaded {len(validated_df)} records!"
                         )
 
                 except pa.errors.SchemaErrors as schema_error:
@@ -128,7 +132,7 @@ class PipelineController:
 
     def _view_flow(self):
         try:
-            df = self._fetch_data_from_db()  # Criar um modulo pra isso
+            df = self.postgres_reader.read_data("SELECT * FROM expenses")
 
             if df is not None and not df.empty:
                 self.view.show_data_view(df)

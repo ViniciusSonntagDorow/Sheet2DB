@@ -28,8 +28,8 @@ class WebUI:
         st.set_page_config(
             page_title="Spendly",
             page_icon="💵",
-            layout="centered",
-            initial_sidebar_state="expanded",
+            layout="wide",
+            initial_sidebar_state="auto",
             menu_items={
                 "About": "https://www.linkedin.com/in/viniciussonntagdorow/",
             },
@@ -60,12 +60,12 @@ class WebUI:
         return self.manage.render()
 
     def show_dataframe_preview(self, df: pd.DataFrame) -> None:
-        st.subheader("Data Preview")
+        st.subheader("Data Preview", anchor=False)
         st.dataframe(df.head(5))
 
     def show_success(self, message: str) -> None:
         st.balloons()
-        st.success(message, icon="✅")
+        st.toast(message, icon="✅", duration="short")
 
     def show_error(self, message: str) -> None:
         st.error(message, icon="🚨")
@@ -77,4 +77,4 @@ class WebUI:
         st.info(message, icon="ℹ️")
 
     def ask_confirmation(self, question: str) -> bool:
-        return st.button(question, width="stretch")
+        return st.button(question, width="stretch", type="primary")
