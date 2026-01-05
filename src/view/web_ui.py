@@ -3,9 +3,7 @@ import pandas as pd
 from typing import Optional, Dict, Any
 
 from view.components.header import HeaderComponent
-from view.components.upload_file import UploadFileComponent
-from view.components.upload_options import UploadOptionsComponent
-from view.components.navigation import NavigationComponent
+from view.components.navigation import NavigationComponent, NavigationTabs
 from view.components.data_view import DataViewComponent
 from view.components.home import HomeComponent
 from view.components.insert_form import InsertFormComponent
@@ -16,8 +14,6 @@ class WebUI:
     def __init__(self):
         self._set_page_config()
         self.header = HeaderComponent()
-        self.upload = UploadFileComponent()
-        self.upload_options = UploadOptionsComponent()
         self.navigation = NavigationComponent()
         self.data_view = DataViewComponent()
         self.home = HomeComponent()
@@ -38,7 +34,7 @@ class WebUI:
     def show_header(self) -> None:
         self.header.render()
 
-    def show_navigation(self) -> Any:
+    def show_navigation(self) -> NavigationTabs:
         return self.navigation.render()
 
     def show_home(self) -> Any:
@@ -46,12 +42,6 @@ class WebUI:
 
     def get_insert_form(self) -> Optional[Dict[str, Any]]:
         return self.insert_form.render()
-
-    def get_upload_option(self) -> Optional[str]:
-        return self.upload_options.render()
-
-    def get_uploaded_file(self, file_type: str) -> Any:
-        return self.upload.render(file_type)
 
     def show_data_view(self, df: pd.DataFrame) -> None:
         self.data_view.render(df)

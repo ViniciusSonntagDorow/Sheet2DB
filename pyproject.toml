@@ -11,5 +11,5 @@ dependencies = [
     "python-calamine>=0.6.1",
     "python-dotenv>=1.2.1",
     "sqlalchemy>=2.0.44",
-    "streamlit>=1.51.0",
+    "streamlit[charts]>=1.51.0",
 ]
