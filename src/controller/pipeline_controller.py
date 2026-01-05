@@ -2,8 +2,6 @@ import pandas as pd
 import pandera as pa
 from enum import Enum
 
-from model.csv_reader import CSVReader
-from model.excel_reader import ExcelReader
 from model.pandera_validator import PanderaValidator
 from model.postgres_loader import PostgresLoader
 from model.postgres_reader import PostgresReader
@@ -11,21 +9,11 @@ from model.postgres_reader import PostgresReader
 from view.web_ui import WebUI
 
 
-class FileType(Enum):
-    """Supported file types"""
-
-    CSV = "csv"
-    EXCEL = "excel"
-    XLSX = "xlsx"
-
-
 class PipelineController:
     def __init__(self, view: WebUI):
         self.view = view
 
         self.postgres_reader = PostgresReader()
-        self.csv_reader = CSVReader()
-        self.excel_reader = ExcelReader()
         self.validator = PanderaValidator()
         self.loader = PostgresLoader()
 
@@ -40,9 +28,6 @@ class PipelineController:
         with tabs.insert:
             self._insert_flow()
 
-        with tabs.upload:
-            self._upload_flow()
-
         with tabs.view:
             self._view_flow()
 
@@ -55,7 +40,7 @@ class PipelineController:
     def _insert_flow(self):
         expense_data = self.view.get_insert_form()
 
-        if expense_data and expense_data.get("submitted"):
+        if expense_data.get("submitted"):
             try:
                 df = pd.DataFrame(
                     [
@@ -85,50 +70,6 @@ class PipelineController:
 
             except Exception as e:
                 self.view.show_error(f"Error inserting expense: {str(e)}")
-
-    def _upload_flow(self):
-        file_type = self.view.get_upload_option()
-
-        if file_type:
-            uploaded_file = self.view.get_uploaded_file(file_type)
-
-            if uploaded_file:
-                try:
-                    df = self._read_file(uploaded_file, file_type)
-
-                    validated_df = self.validator.validate_data(df)
-
-                    validated_df["user"] = "user"
-                    validated_df["created_at"] = pd.Timestamp.now()
-
-                    if self.view.ask_confirmation(
-                        "Do you want to load this data into the database?"
-                    ):
-                        self.loader.load_data(validated_df)
-
-                        self.view.show_success(
-                            f"Successfully loaded {len(validated_df)} records!"
-                        )
-
-                except pa.errors.SchemaErrors as schema_error:
-                    self.view.show_error(
-                        f"❌ Data validation failed: Found {len(schema_error.failure_cases)} validation errors"
-                    )
-                    self.view.show_dataframe_preview(schema_error.failure_cases)
-
-                except Exception as e:
-                    self.view.show_error(f"Error inserting expense: {str(e)}")
-
-    def _read_file(self, file, file_type: str) -> pd.DataFrame:
-        """Read file based on type"""
-        file_type_lower = file_type.lower()
-
-        if file_type_lower == FileType.CSV.value:
-            return self.csv_reader.read_data(file)
-        elif file_type_lower in [FileType.EXCEL.value, FileType.XLSX.value]:
-            return self.excel_reader.read_data(file)
-        else:
-            raise ValueError(f"Unsupported file type: {file_type}")
 
     def _view_flow(self):
         try:
