@@ -4,10 +4,10 @@ from typing import Optional, Dict, Any
 
 from view.components.header import HeaderComponent
 from view.components.navigation import NavigationComponent, NavigationTabs
-from view.components.data_view import DataViewComponent
+from view.components.dashboard import DashboardComponent
 from view.components.home import HomeComponent
 from view.components.insert_form import InsertFormComponent
-from view.components.manage import ManageComponent
+from view.components.delete_form import DeleteFormComponent
 
 
 class WebUI:
@@ -15,10 +15,10 @@ class WebUI:
         self._set_page_config()
         self.header = HeaderComponent()
         self.navigation = NavigationComponent()
-        self.data_view = DataViewComponent()
+        self.dashboard = DashboardComponent()
         self.home = HomeComponent()
         self.insert_form = InsertFormComponent()
-        self.manage = ManageComponent()
+        self.delete_form = DeleteFormComponent()
 
     def _set_page_config(self) -> None:
         st.set_page_config(
@@ -43,11 +43,11 @@ class WebUI:
     def get_insert_form(self) -> Optional[Dict[str, Any]]:
         return self.insert_form.render()
 
-    def show_data_view(self, df: pd.DataFrame) -> None:
-        self.data_view.render(df)
+    def show_dashboard(self, df: pd.DataFrame) -> None:
+        self.dashboard.render(df)
 
-    def show_manage(self) -> Any:
-        return self.manage.render()
+    def get_delete_form(self, df: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
+        return self.delete_form.render(df)
 
     def show_dataframe_preview(self, df: pd.DataFrame) -> None:
         st.subheader("Data Preview", anchor=False)

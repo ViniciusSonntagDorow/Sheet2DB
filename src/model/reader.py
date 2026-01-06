@@ -4,5 +4,5 @@ import pandas as pd
 
 class Reader(ABC):
     @abstractmethod
-    def read_data(self, file: str) -> pd.DataFrame:
+    def read_data(self, query: str) -> pd.DataFrame:
         pass

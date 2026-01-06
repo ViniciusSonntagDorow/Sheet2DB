@@ -6,11 +6,13 @@ from typing import NamedTuple
 class NavigationTabs(NamedTuple):
     home: DeltaGenerator
     insert: DeltaGenerator
-    view: DeltaGenerator
-    manage: DeltaGenerator
+    dashboard: DeltaGenerator
+    delete: DeltaGenerator
 
 
 class NavigationComponent:
     def render(self) -> NavigationTabs:
-        home, insert, view, manage = st.tabs(["Home", "Insert", "View", "Manage"])
-        return NavigationTabs(home, insert, view, manage)
+        home, insert, delete, dashboard = st.tabs(
+            ["Home", "Insert", "Delete", "Dashboard"]
+        )
+        return NavigationTabs(home, insert, dashboard, delete)
