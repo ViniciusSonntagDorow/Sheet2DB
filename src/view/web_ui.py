@@ -25,7 +25,7 @@ class WebUI:
             page_title="Spendly",
             page_icon="💵",
             layout="wide",
-            initial_sidebar_state="auto",
+            initial_sidebar_state="expanded",
             menu_items={
                 "About": "https://www.linkedin.com/in/viniciussonntagdorow/",
             },
