@@ -1,12 +1,14 @@
 import pandas as pd
 import pandera as pa
-from enum import Enum
+import streamlit as st
 
 from model.pandera_validator import PanderaValidator
 from model.postgres_loader import PostgresLoader
 from model.postgres_reader import PostgresReader
+from model.postgres_deleter import PostgresDeleter
 
 from view.web_ui import WebUI
+from utils.config import config
 
 
 class PipelineController:
@@ -16,6 +18,7 @@ class PipelineController:
         self.postgres_reader = PostgresReader()
         self.validator = PanderaValidator()
         self.loader = PostgresLoader()
+        self.deleter = PostgresDeleter()
 
     def run(self):
         self.view.show_header()
@@ -28,27 +31,27 @@ class PipelineController:
         with tabs.insert:
             self._insert_flow()
 
-        with tabs.view:
-            self._view_flow()
+        with tabs.dashboard:
+            self._dashboard_flow()
 
-        with tabs.manage:
-            self._manage_flow()
+        with tabs.delete:
+            self._delete_flow()
 
     def _home_flow(self):
         self.view.show_home()
 
     def _insert_flow(self):
-        expense_data = self.view.get_insert_form()
+        insert_data = self.view.get_insert_form()
 
-        if expense_data.get("submitted"):
+        if insert_data.get("submitted"):
             try:
                 df = pd.DataFrame(
                     [
                         {
-                            "expense_date": expense_data["date"],
-                            "description": expense_data["description"],
-                            "category": expense_data["category"],
-                            "amount": expense_data["amount"],
+                            "expense_date": insert_data["date"],
+                            "description": insert_data["description"],
+                            "category": insert_data["category"],
+                            "amount": insert_data["amount"],
                         }
                     ]
                 )
@@ -71,17 +74,41 @@ class PipelineController:
             except Exception as e:
                 self.view.show_error(f"Error inserting expense: {str(e)}")
 
-    def _view_flow(self):
+    def _dashboard_flow(self):
         try:
-            df = self.postgres_reader.read_data("SELECT * FROM expenses")
+            df = self.postgres_reader.read_data(
+                "SELECT expense_date, description, category, amount FROM expenses"
+            )
 
             if df is not None and not df.empty:
-                self.view.show_data_view(df)
+                self.view.show_dashboard(df)
             else:
                 self.view.show_info("No data available to display.")
 
         except Exception as e:
             self.view.show_error(f"Error loading data: {str(e)}")
 
-    def _manage_flow(self):
-        self.view.show_manage()
+    def _delete_flow(self):
+        df = self.postgres_reader.read_data("SELECT * FROM expenses")
+
+        delete_data = self.view.get_delete_form(df)
+
+        if delete_data.get("submitted"):
+            try:
+                selected_ids = delete_data.get("selected_ids", [])
+
+                if selected_ids:
+                    deleted_count = self.deleter.delete_by_ids(
+                        config.POSTGRES_TABLE, selected_ids
+                    )
+
+                    if deleted_count > 0:
+                        self.view.show_success(
+                            f"Successfully deleted {deleted_count} record(s)!"
+                        )
+                        st.rerun()  # Refresh the page to show updated data
+                    else:
+                        self.view.show_warning("No records were deleted.")
+
+            except Exception as e:
+                self.view.show_error(f"Error managing data: {str(e)}")

@@ -4,5 +4,5 @@ import pandas as pd
 
 class Loader(ABC):
     @abstractmethod
-    def load_data(self, df: pd.DataFrame, destination: str) -> None:
+    def load_data(self, df: pd.DataFrame, table_name: str) -> None:
         pass

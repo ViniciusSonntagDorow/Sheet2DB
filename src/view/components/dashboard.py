@@ -4,7 +4,7 @@ from typing import Optional
 import plotly.express as px
 
 
-class DataViewComponent:
+class DashboardComponent:
     def render(self, df: Optional[pd.DataFrame] = None) -> None:
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -36,6 +36,7 @@ class DataViewComponent:
         col1, col2 = st.columns(2)
         with col1:
             with st.container(border=True):
+                st.subheader("Expenses by Category", anchor=False)
                 st.plotly_chart(
                     px.bar(
                         category_data,
@@ -44,32 +45,33 @@ class DataViewComponent:
                         text="amount",
                     )
                     .update_traces(
-                        textposition="outside",
+                        textposition="auto",
                         texttemplate="€%{text:,.1f}",
                         textfont=dict(size=14),
                     )
                     .update_layout(
-                        margin=dict(t=50, b=0, l=0, r=30),
+                        margin=dict(t=0, b=0, l=0, r=30),
                         yaxis=dict(title="", showgrid=False, showticklabels=False),
                         xaxis=dict(title="", tickfont=dict(size=14)),
-                        title=dict(
-                            text="Expenses by Category",
-                            x=0,
-                            xanchor="left",
-                            font=dict(size=24),
-                        ),
+                        # title=dict(
+                        #     text="Expenses by Category",
+                        #     x=0,
+                        #     xanchor="left",
+                        #     font=dict(size=24),
+                        # ),
                     ),
                     config={"staticPlot": True},
                 )
         with col2:
             with st.container(border=True):
+                st.subheader("Expenses by Category", anchor=False)
                 st.plotly_chart(
                     px.line(
                         date_data,
                         x="expense_date",
                         y="amount",
                     ).update_layout(
-                        margin=dict(t=50, b=0, l=0, r=30),
+                        margin=dict(t=0, b=0, l=0, r=30),
                         yaxis=dict(title="", showgrid=False, showticklabels=False),
                         xaxis=dict(
                             title="",
@@ -77,20 +79,33 @@ class DataViewComponent:
                             tickformat="%d %b",
                             dtick="D1",
                         ),
-                        title=dict(
-                            text="Expenses Over Time",
-                            x=0,
-                            xanchor="left",
-                            font=dict(size=24),
-                        ),
+                        # title=dict(
+                        #     text="Expenses Over Time",
+                        #     x=0,
+                        #     xanchor="left",
+                        #     font=dict(size=24),
+                        # ),
                     ),
-                    # config={"staticPlot": True},
+                    config={"staticPlot": True},
                 )
 
         with st.container(border=True):
             st.subheader("Recent Expenses", anchor=False)
             st.dataframe(
-                date_data.sort_values("expense_date", ascending=False).head(20),
+                df.sort_values("expense_date", ascending=False).head(20),
+                hide_index=True,
+                column_config={
+                    "expense_date": st.column_config.DateColumn(
+                        "Date",
+                        format="DD/MM/YYYY",
+                    ),
+                    "description": "Description",
+                    "category": "Category",
+                    "amount": st.column_config.ProgressColumn(
+                        "Amount (€)",
+                        format="€%.1f",
+                        min_value=0,
+                        max_value=df["amount"].max(),
+                    ),
+                },
             )
-            print(date_data.head(20))
-            print(date_data.info())
