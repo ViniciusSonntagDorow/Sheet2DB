@@ -43,6 +43,7 @@ class DashboardComponent:
                         x="category",
                         y="amount",
                         text="amount",
+                        orientation="v",
                     )
                     .update_traces(
                         textposition="auto",
