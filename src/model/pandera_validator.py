@@ -2,10 +2,9 @@ import pandas as pd
 import pandera.pandas as pa
 
 from utils.schema import BaseSchema
-from model.validator import Validator
 
 
-class PanderaValidator(Validator):
+class PanderaValidator:
     def __init__(self, schema: pa.DataFrameSchema = BaseSchema):
         self.__schema = schema
 

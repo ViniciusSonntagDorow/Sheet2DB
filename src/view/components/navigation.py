@@ -13,6 +13,6 @@ class NavigationTabs(NamedTuple):
 class NavigationComponent:
     def render(self) -> NavigationTabs:
         home, insert, delete, dashboard = st.tabs(
-            ["Home", "Insert", "Delete", "Dashboard"]
+            ["Overview", "Insert Expense", "Delete Expense", "Dashboard"]
         )
         return NavigationTabs(home, insert, dashboard, delete)

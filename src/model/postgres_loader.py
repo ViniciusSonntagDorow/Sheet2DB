@@ -1,16 +1,13 @@
 import pandas as pd
 
-from model.loader import Loader
-from utils.config import config
 
+class PostgresLoader:
+    def __init__(self, connection_string: str, table_name: str = "expenses"):
+        self._connection_string = connection_string
+        self._default_table_name = table_name
 
-class PostgresLoader(Loader):
-    def __init__(self, connection_string: str = config.get_connection_string()):
-        self.__connection_string = connection_string
-
-    def load_data(
-        self, df: pd.DataFrame, table_name: str = config.POSTGRES_TABLE
-    ) -> None:
+    def load_data(self, df: pd.DataFrame, table_name: str | None = None) -> None:
+        target_table = table_name or self._default_table_name
         df.to_sql(
-            table_name, con=self.__connection_string, if_exists="append", index=False
+            target_table, con=self._connection_string, if_exists="append", index=False
         )

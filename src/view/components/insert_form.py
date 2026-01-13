@@ -8,7 +8,7 @@ from utils.config import config
 class InsertFormComponent:
     def render(self) -> Optional[Dict[str, Any]]:
         with st.form("insert_expense_form"):
-            st.subheader("Insert New Expense", anchor=False)
+            st.subheader("Insert Expense", anchor=False)
             col1, col2 = st.columns(2)
             with col1:
                 date_input = st.date_input(
