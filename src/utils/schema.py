@@ -8,10 +8,10 @@ from utils.config import config
 
 class BaseSchema(pa.DataFrameModel):
     expense_date: Series[pa.DateTime]
-    description: Series[str]
+    description: Series[str] = pa.Field(str_length={"min_value": 1})
     # description: Series[Optional[str]] = pa.Field(nullable=True) # If needed, we can specify a nullable collumn
     category: Series[str] = pa.Field(isin=config.VALID_CATEGORIES)
-    amount: Series[float] = pa.Field(ge=0)  # Greater or equal to 0
+    amount: Series[float] = pa.Field(gt=0)  # Greater than 0
 
     class Config:
         """Apply strict and coerce to all columns"""
